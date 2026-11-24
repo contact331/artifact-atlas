@@ -97,7 +97,7 @@ body:has(.atlas-full-pdf-overlay) .atlas-living-ready .cube-symbol,body:has(#atl
   font-family: Oxanium, Inter, "Segoe UI", system-ui, sans-serif;
   font-weight: 600;
   font-size: 11px;
-  line-height: 1.1;
+  line-height: 1.35;
   overflow-wrap: anywhere;
   text-shadow: 0 1px #0a0712;
 }
