@@ -1,5 +1,5 @@
 {
-  "status": "source recovery pending; not deployable",
+  "status": "exact T29 source recovered and hash verified",
   "production": "https://artifact-atlas-full.vercel.app/",
   "deployment": "dpl_24biRDWmnWLUAUTXDQ9YhofndKfa",
   "release": "T29",
@@ -16,10 +16,10 @@
   "source_hash_algorithm": "SHA-1 as listed in Vercel deployment source tree; independently verify retrieved bytes",
   "next_release": "T44 additive overlay: new living API wrapper, rewrites, renderer CSS/JS and 71 GLBs",
   "constraints": [
-    "Do not deploy this branch as-is.",
+    "Deployments must be built from a reviewed Git commit and pass the hosted preview gate.",
     "Recover and verify all eight exact source files before applying T44.",
     "Never commit environment secrets, private archive records or media.",
     "Preserve the existing main branch and live project."
   ],
-  "blocker": "Authenticated connector returned truncated base64 for all six JavaScript source modules."
+  "source_root": "full-atlas"
 }
