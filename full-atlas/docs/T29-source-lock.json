@@ -1,0 +1,15 @@
+{
+  "status": "RECONSTRUCTED CANDIDATE, NOT EXACT DEPLOYED SOURCE",
+  "baseDeployment": "dpl_24biRDWmnWLUAUTXDQ9YhofndKfa",
+  "existingVercelSourceSHA1": {
+    "api/atlas.mjs": "17c761853aee52df809f1d50708d325ecd3c2403",
+    "api/chrome.mjs": "02ff9be450c592db9f38a2688ce37a9fee5796b8",
+    "api/navigation.mjs": "230dfbc9611811988c944d039f3a3c8da1daddda",
+    "api/quickpad.mjs": "1d46cb5f006e0c27b9de57e5135a89be0d94d469",
+    "api/sidebar.mjs": "18b70fa4f01b4cde2d1f0ef51bf6d2b8f5ea2a36",
+    "api/social.mjs": "0596d5c8ce16974347db25f0a6d6c4e05f1c9568",
+    "package.json": "3e4f29a485226c3266031dce18777b03abd04162"
+  },
+  "baseConfigurationSHA1": "1844b6f44aa8b0043bb0d07f02f5b4284a8a058f",
+  "originalT23ZipSHA256": "a3507015eabb13ab4c80281b3e976a97e0c9da297f8a4e48541da3c7f5ac5bdf"
+}

@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import proxy from '../api/atlas.mjs';
+const req=(path,opts={})=>new Request('https://atlas.example/api/atlas?asset='+encodeURIComponent(path),opts);
+delete process.env.ATLAS_PRIVATE_ORIGIN;
+assert.equal((await proxy.fetch(req('data/atlas.json'))).status,503);
+process.env.ATLAS_PRIVATE_ORIGIN='fixture-only';
+let calls=0;globalThis.fetch=async(url,options)=>{calls++;assert.equal(options.headers.get('Authorization'),'Bearer fixture-only');assert.equal(options.headers.get('range'),'bytes=0-7');assert.equal(options.redirect,'error');assert.ok(String(url).endsWith('/audio/test.mp3'));return new Response('12345678',{status:206,headers:{'content-type':'audio/mpeg','content-range':'bytes 0-7/16','content-length':'8','accept-ranges':'bytes','etag':'fixture'}})};
+const response=await proxy.fetch(req('audio/test.mp3',{headers:{range:'bytes=0-7'}}));
+assert.equal(response.status,206);assert.equal(response.headers.get('content-range'),'bytes 0-7/16');assert.equal(response.headers.get('accept-ranges'),'bytes');assert.equal(await response.text(),'12345678');
+assert.equal((await proxy.fetch(req('data/../x'))).status,404);assert.equal((await proxy.fetch(req('other/x'))).status,404);assert.equal((await proxy.fetch(req('data/atlas.json',{method:'POST'}))).status,405);assert.equal(calls,1);console.log('PASS original proxy fixture: credential gate, range, headers, traversal, method');

@@ -1,0 +1,6 @@
+{
+  "name": "artifact-atlas-full",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.x" }
+}

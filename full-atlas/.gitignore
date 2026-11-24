@@ -1,0 +1,12 @@
+node_modules/
+.vercel/
+.env*
+!.env.example
+public/audio/
+public/data/
+public/downloads/
+public/methodology/
+public/private_previews/
+*.zip
+*.mp3
+*.pdf
