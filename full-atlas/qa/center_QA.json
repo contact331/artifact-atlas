@@ -1,0 +1,438 @@
+{
+  "models": 71,
+  "cases": 38340,
+  "failures": [],
+  "oldMaxCenterOffsetNormalized": 0.43528051324208766,
+  "newMaxCenterOffsetNormalized": 0,
+  "oldClipCases": 17522,
+  "newMaxExtentNormalized": 0.9200000000000004,
+  "minScale": 0.5021607997506596,
+  "rows": [
+    {
+      "name": "ART-01.glb",
+      "oldOffset": 0.11531366884710072,
+      "newOffset": 0,
+      "oldClipCases": 390
+    },
+    {
+      "name": "ART-02.glb",
+      "oldOffset": 0.15776175498875547,
+      "newOffset": 0,
+      "oldClipCases": 222
+    },
+    {
+      "name": "ART-03.glb",
+      "oldOffset": 0.1684278539697457,
+      "newOffset": 0,
+      "oldClipCases": 48
+    },
+    {
+      "name": "ART-04.glb",
+      "oldOffset": 0.11936294206569546,
+      "newOffset": 0,
+      "oldClipCases": 36
+    },
+    {
+      "name": "ART-05.glb",
+      "oldOffset": 0.18558865374864383,
+      "newOffset": 0,
+      "oldClipCases": 46
+    },
+    {
+      "name": "ART-06.glb",
+      "oldOffset": 0.08891895378310889,
+      "newOffset": 0,
+      "oldClipCases": 108
+    },
+    {
+      "name": "ART-07.glb",
+      "oldOffset": 0.08479055403373026,
+      "newOffset": 0,
+      "oldClipCases": 340
+    },
+    {
+      "name": "ART-08.glb",
+      "oldOffset": 0.14570541164961598,
+      "newOffset": 0,
+      "oldClipCases": 320
+    },
+    {
+      "name": "ART-09.glb",
+      "oldOffset": 0.021635926118623226,
+      "newOffset": 0,
+      "oldClipCases": 108
+    },
+    {
+      "name": "ART-10.glb",
+      "oldOffset": 0.15186651663302114,
+      "newOffset": 0,
+      "oldClipCases": 484
+    },
+    {
+      "name": "ART-11.glb",
+      "oldOffset": 0.16227995287492253,
+      "newOffset": 0,
+      "oldClipCases": 520
+    },
+    {
+      "name": "ART-12.glb",
+      "oldOffset": 0.2230236958201544,
+      "newOffset": 0,
+      "oldClipCases": 168
+    },
+    {
+      "name": "ART-13.glb",
+      "oldOffset": 0.12713617264766894,
+      "newOffset": 0,
+      "oldClipCases": 0
+    },
+    {
+      "name": "ART-14.glb",
+      "oldOffset": 0.2745654601545605,
+      "newOffset": 0,
+      "oldClipCases": 468
+    },
+    {
+      "name": "ART-15.glb",
+      "oldOffset": 0.13485336649509042,
+      "newOffset": 0,
+      "oldClipCases": 140
+    },
+    {
+      "name": "ART-16.glb",
+      "oldOffset": 0.07086200315827566,
+      "newOffset": 0,
+      "oldClipCases": 63
+    },
+    {
+      "name": "ART-17.glb",
+      "oldOffset": 0.1726886793380145,
+      "newOffset": 0,
+      "oldClipCases": 45
+    },
+    {
+      "name": "ART-18.glb",
+      "oldOffset": 0.08217536781803932,
+      "newOffset": 0,
+      "oldClipCases": 102
+    },
+    {
+      "name": "ART-19.glb",
+      "oldOffset": 0.21138569583290945,
+      "newOffset": 0,
+      "oldClipCases": 540
+    },
+    {
+      "name": "ART-20.glb",
+      "oldOffset": 0.05332843607935287,
+      "newOffset": 0,
+      "oldClipCases": 60
+    },
+    {
+      "name": "ART-21.glb",
+      "oldOffset": 0.13076825301890274,
+      "newOffset": 0,
+      "oldClipCases": 396
+    },
+    {
+      "name": "ART-22.glb",
+      "oldOffset": 0.11823603950661643,
+      "newOffset": 0,
+      "oldClipCases": 330
+    },
+    {
+      "name": "ART-23.glb",
+      "oldOffset": 0.09013947293187209,
+      "newOffset": 0,
+      "oldClipCases": 490
+    },
+    {
+      "name": "ART-24.glb",
+      "oldOffset": 0.10294005176229608,
+      "newOffset": 0,
+      "oldClipCases": 314
+    },
+    {
+      "name": "ART-25.glb",
+      "oldOffset": 0.27419374921470113,
+      "newOffset": 0,
+      "oldClipCases": 396
+    },
+    {
+      "name": "ART-26.glb",
+      "oldOffset": 0.3245875096732544,
+      "newOffset": 0,
+      "oldClipCases": 514
+    },
+    {
+      "name": "ART-27.glb",
+      "oldOffset": 0.050872122115410805,
+      "newOffset": 0,
+      "oldClipCases": 0
+    },
+    {
+      "name": "ART-28.glb",
+      "oldOffset": 0.08638775188531089,
+      "newOffset": 0,
+      "oldClipCases": 39
+    },
+    {
+      "name": "ART-29.glb",
+      "oldOffset": 0.12098262228798151,
+      "newOffset": 0,
+      "oldClipCases": 214
+    },
+    {
+      "name": "ART-30.glb",
+      "oldOffset": 0.3359476644984058,
+      "newOffset": 0,
+      "oldClipCases": 490
+    },
+    {
+      "name": "ART-31.glb",
+      "oldOffset": 0.119443502101532,
+      "newOffset": 0,
+      "oldClipCases": 38
+    },
+    {
+      "name": "ART-32.glb",
+      "oldOffset": 0.05255429857893688,
+      "newOffset": 0,
+      "oldClipCases": 108
+    },
+    {
+      "name": "ART-33.glb",
+      "oldOffset": 0.06833577883282677,
+      "newOffset": 0,
+      "oldClipCases": 34
+    },
+    {
+      "name": "ART-34.glb",
+      "oldOffset": 0.30761740371721225,
+      "newOffset": 0,
+      "oldClipCases": 540
+    },
+    {
+      "name": "ART-35.glb",
+      "oldOffset": 0.17455743362650197,
+      "newOffset": 0,
+      "oldClipCases": 112
+    },
+    {
+      "name": "ART-36.glb",
+      "oldOffset": 0.021629470024402853,
+      "newOffset": 0,
+      "oldClipCases": 72
+    },
+    {
+      "name": "ART-37.glb",
+      "oldOffset": 0.3745084176525336,
+      "newOffset": 0,
+      "oldClipCases": 407
+    },
+    {
+      "name": "ART-38.glb",
+      "oldOffset": 0.11352905226174495,
+      "newOffset": 0,
+      "oldClipCases": 370
+    },
+    {
+      "name": "ART-39.glb",
+      "oldOffset": 0.11374401574310415,
+      "newOffset": 0,
+      "oldClipCases": 360
+    },
+    {
+      "name": "ART-40.glb",
+      "oldOffset": 0.15991199795134442,
+      "newOffset": 0,
+      "oldClipCases": 380
+    },
+    {
+      "name": "ART-41.glb",
+      "oldOffset": 0.10491364790294136,
+      "newOffset": 0,
+      "oldClipCases": 375
+    },
+    {
+      "name": "ART-42.glb",
+      "oldOffset": 0.29497399871600716,
+      "newOffset": 0,
+      "oldClipCases": 324
+    },
+    {
+      "name": "ART-43.glb",
+      "oldOffset": 0.2528297670485427,
+      "newOffset": 0,
+      "oldClipCases": 304
+    },
+    {
+      "name": "ART-44.glb",
+      "oldOffset": 0.14802609436180608,
+      "newOffset": 0,
+      "oldClipCases": 108
+    },
+    {
+      "name": "ART-45.glb",
+      "oldOffset": 0.06227367575896108,
+      "newOffset": 0,
+      "oldClipCases": 66
+    },
+    {
+      "name": "ART-46.glb",
+      "oldOffset": 0.3657974995541619,
+      "newOffset": 0,
+      "oldClipCases": 380
+    },
+    {
+      "name": "ART-47.glb",
+      "oldOffset": 0.30937060965719404,
+      "newOffset": 0,
+      "oldClipCases": 532
+    },
+    {
+      "name": "ART-48.glb",
+      "oldOffset": 0.3004767119901447,
+      "newOffset": 0,
+      "oldClipCases": 188
+    },
+    {
+      "name": "ART-49.glb",
+      "oldOffset": 0.15262446244282502,
+      "newOffset": 0,
+      "oldClipCases": 174
+    },
+    {
+      "name": "ART-50.glb",
+      "oldOffset": 0.12655510587307606,
+      "newOffset": 0,
+      "oldClipCases": 36
+    },
+    {
+      "name": "ART-51.glb",
+      "oldOffset": 0.11882441623894385,
+      "newOffset": 0,
+      "oldClipCases": 36
+    },
+    {
+      "name": "ART-52.glb",
+      "oldOffset": 0.14801969706725807,
+      "newOffset": 0,
+      "oldClipCases": 38
+    },
+    {
+      "name": "ART-53.glb",
+      "oldOffset": 0.23099781553522789,
+      "newOffset": 0,
+      "oldClipCases": 314
+    },
+    {
+      "name": "ART-54.glb",
+      "oldOffset": 0.13031735993545865,
+      "newOffset": 0,
+      "oldClipCases": 188
+    },
+    {
+      "name": "ART-55.glb",
+      "oldOffset": 0.08515056238366175,
+      "newOffset": 0,
+      "oldClipCases": 140
+    },
+    {
+      "name": "ART-56.glb",
+      "oldOffset": 0.10094626966831538,
+      "newOffset": 0,
+      "oldClipCases": 540
+    },
+    {
+      "name": "ART-57.glb",
+      "oldOffset": 0.11210167402503157,
+      "newOffset": 0,
+      "oldClipCases": 413
+    },
+    {
+      "name": "ART-58.glb",
+      "oldOffset": 0.06661548642627571,
+      "newOffset": 0,
+      "oldClipCases": 40
+    },
+    {
+      "name": "ART-59.glb",
+      "oldOffset": 0.06551193138505126,
+      "newOffset": 0,
+      "oldClipCases": 188
+    },
+    {
+      "name": "ART-60.glb",
+      "oldOffset": 0.07378213224396447,
+      "newOffset": 0,
+      "oldClipCases": 42
+    },
+    {
+      "name": "ART-61.glb",
+      "oldOffset": 0.15361116754056678,
+      "newOffset": 0,
+      "oldClipCases": 36
+    },
+    {
+      "name": "ART-62.glb",
+      "oldOffset": 0.18293813301216344,
+      "newOffset": 0,
+      "oldClipCases": 50
+    },
+    {
+      "name": "ART-63.glb",
+      "oldOffset": 0.29980794317799836,
+      "newOffset": 0,
+      "oldClipCases": 152
+    },
+    {
+      "name": "ART-64.glb",
+      "oldOffset": 0.09499053253555159,
+      "newOffset": 0,
+      "oldClipCases": 96
+    },
+    {
+      "name": "ART-65.glb",
+      "oldOffset": 0.43528051324208766,
+      "newOffset": 0,
+      "oldClipCases": 532
+    },
+    {
+      "name": "ART-66.glb",
+      "oldOffset": 0.21733128650556216,
+      "newOffset": 0,
+      "oldClipCases": 540
+    },
+    {
+      "name": "ART-67.glb",
+      "oldOffset": 0.18242617385123622,
+      "newOffset": 0,
+      "oldClipCases": 233
+    },
+    {
+      "name": "ART-68.glb",
+      "oldOffset": 0.2531344026157718,
+      "newOffset": 0,
+      "oldClipCases": 505
+    },
+    {
+      "name": "ART-69.glb",
+      "oldOffset": 0.18157199682008449,
+      "newOffset": 0,
+      "oldClipCases": 254
+    },
+    {
+      "name": "ART-70.glb",
+      "oldOffset": 0.13071383308811008,
+      "newOffset": 0,
+      "oldClipCases": 524
+    },
+    {
+      "name": "ART-71.glb",
+      "oldOffset": 0.26658069019801356,
+      "newOffset": 0,
+      "oldClipCases": 362
+    }
+  ]
+}

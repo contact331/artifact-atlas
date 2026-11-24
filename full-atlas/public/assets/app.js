@@ -707,15 +707,17 @@
 
   function setInspector(show){EL.inspector.classList.toggle('open',show);$('#scrim').classList.toggle('active',show);document.body.classList.toggle('inspector-open',show);}
   function selectRecord(kind,id,shouldOpen){
-    clearPrivatePreview();if(!['artifact','chat','project'].includes(kind))return;const record=db[kind].get(id);if(!record)return;state.selectedKind=kind;state.selectedId=id;
+    if(!state.selectedId)directoryScroll=EL.content.scrollTop;clearPrivatePreview();if(!['artifact','chat','project'].includes(kind))return;const record=db[kind].get(id);if(!record)return;state.selectedKind=kind;state.selectedId=id;
     $$('.cube.selected').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-pressed','false');});
     $$(`.cube[data-kind="${kind}"][data-record="${id}"]`).forEach(x=>{x.classList.add('selected');x.setAttribute('aria-pressed','true');});
     renderInspector();updateHash();hideHover();if(shouldOpen&&window.innerWidth<=820)setInspector(true);
   }
   function eventSelect(kind,id){selectRecord(kind,id,true);}
   function selectedRecord(){return db?.[state.selectedKind]?.get(state.selectedId);}
-  function clearInspectorSelection(){const previous=$('.cube.selected');clearPrivatePreview();state.selectedKind='';state.selectedId='';$$('.cube.selected').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-pressed','false');});renderInspector();updateHash();hideHover();setInspector(false);if(previous?.isConnected)previous.focus({preventScroll:true});else if(window.innerWidth>820)$('#quickpadSocket')?.focus({preventScroll:true});else $('#openInspector')?.focus({preventScroll:true});}
-  function renderInspector(){const record=selectedRecord();EL.inspector.classList.toggle('inspector-idle',!record);if(!record){EL.content.replaceChildren();EL.number.textContent='/ —';EL.footId.textContent='';return;}
+  let directoryScroll=0;
+  function renderArtifactDirectory(){const items=[...atlas.artifacts].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));return `<section class="artifact-directory" aria-label="Artifact directory"><div class="artifact-directory-heading"><h2>Artifact directory</h2><span>${items.length} ARTIFACTS</span></div><div class="artifact-directory-list">${items.map(a=>`<button type="button" class="artifact-directory-entry" style="--entry-face:${esc(colorFor(a,'artifact'))}" data-select-kind="artifact" data-select="${esc(a.id)}"><span class="artifact-directory-id">${esc(a.id)}</span><span class="artifact-directory-name">${esc(a.identity.title)}</span><span class="artifact-directory-arrow" aria-hidden="true">›</span></button>`).join('')}</div></section>`;}
+  function clearInspectorSelection(){const id=state.selectedKind==='artifact'?state.selectedId:'';const hadSelection=!!state.selectedId;clearPrivatePreview();state.selectedKind='';state.selectedId='';$$('.cube.selected').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-pressed','false');});renderInspector();updateHash();hideHover();if(!hadSelection){setInspector(false);$('#openInspector')?.focus({preventScroll:true});return;}if(window.innerWidth<=820&&EL.inspector.classList.contains('open'))setInspector(true);else setInspector(false);const target=id&&EL.content.querySelector(`[data-select="${id}"]`);if(target){target.focus({preventScroll:true});target.scrollIntoView({block:'nearest'});}else $('#quickpadSocket')?.focus({preventScroll:true});}
+  function renderInspector(){const record=selectedRecord();EL.inspector.classList.toggle('inspector-idle',!record);if(!record){EL.content.innerHTML=renderArtifactDirectory();EL.content.scrollTop=directoryScroll;EL.number.textContent='/ —';EL.footId.textContent='';return;}
     EL.number.textContent='/ '+(state.selectedKind==='artifact'?state.selectedId.replace('ART-',''):state.selectedId);
     EL.footId.textContent=record.id;
     if(state.selectedKind==='artifact')EL.content.innerHTML=renderArtifactInspector(record);

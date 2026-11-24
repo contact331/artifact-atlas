@@ -39,5 +39,6 @@
       "source": "/:folder(audio|data|downloads|methodology|private_previews)/:asset*",
       "destination": "/api/atlas?asset=:folder/:asset*"
     }
-  ]
+  ],
+  "outputDirectory": "public"
 }
