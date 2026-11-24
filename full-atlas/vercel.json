@@ -1,1 +1,62 @@
-{"framework":null,"headers":[{"source":"/(.*)","headers":[{"key":"Cache-Control","value":"private, no-store"},{"key":"X-Robots-Tag","value":"noindex, nofollow, noarchive"},{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"no-referrer"},{"key":"X-Frame-Options","value":"SAMEORIGIN"},{"key":"Content-Security-Policy","value":"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; frame-src 'self' blob:; object-src 'none'; frame-ancestors 'self'; base-uri 'none'"}]}],"buildCommand":"","installCommand":"","rewrites":[{"source":"/","destination":"/api/navigation?asset=index.html"},{"source":"/index.html","destination":"/api/navigation?asset=index.html"},{"source":"/assets/app.js","destination":"/api/navigation?asset=assets/app.js"},{"source":"/assets/quickpad.js","destination":"/api/social?asset=assets/quickpad.js"},{"source":"/assets/quickpad.css","destination":"/api/social?asset=assets/quickpad.css"},{"source":"/:folder(assets|audio|data|downloads|methodology|private_previews)/:asset*","destination":"/api/atlas?asset=:folder/:asset*"}]}
+{
+  "framework": null,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; frame-src 'self' blob:; object-src 'none'; frame-ancestors 'self'; base-uri 'none'"
+        }
+      ]
+    }
+  ],
+  "buildCommand": "",
+  "installCommand": "",
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/living?asset=index.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/api/living?asset=index.html"
+    },
+    {
+      "source": "/assets/app.js",
+      "destination": "/api/living?asset=assets/app.js"
+    },
+    {
+      "source": "/assets/quickpad.js",
+      "destination": "/api/social?asset=assets/quickpad.js"
+    },
+    {
+      "source": "/assets/quickpad.css",
+      "destination": "/api/social?asset=assets/quickpad.css"
+    },
+    {
+      "source": "/:folder(assets|audio|data|downloads|methodology|private_previews)/:asset*",
+      "destination": "/api/atlas?asset=:folder/:asset*"
+    }
+  ]
+}
