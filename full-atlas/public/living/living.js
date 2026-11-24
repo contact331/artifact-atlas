@@ -11,8 +11,8 @@ let usesSoftwareRendering = false;
 let ok = false, dirty = true, last = 0, frames = 0, drawn = 0;
 let requested = 0, loading = 0, failed = 0, drag = null, suppress = null;
 let frameRequest = 0, scrollWake = 0, animateVisible = false;
-const band={top:0,height:0,width:0,dpr:0};
-const layout={top:0,bottom:0,dirty:true};
+const band={top:0,left:0,height:0,width:0,dpr:0};
+const layout={top:0,left:0,bottom:0,right:0,dirty:true};
 const drawAhead=180;
 const scrollIdleDelay=100;
 let scrolling = false;
@@ -21,20 +21,20 @@ const entries=new Map(),active=new Map(),queue=new Set();const vs="#version 300 
 function get(id){if(!entries.has(id))entries.set(id,{angle:.22+Number(id.slice(-2))*.17,tilt:.15,state:'idle',raw:null,gpu:null});return entries.get(id)}
 function init(){try{gl=canvas.getContext('webgl2',{
   alpha:true,
-  antialias:!isFirefox,
+  antialias:true,
   premultipliedAlpha:false,
-  powerPreference:isFirefox ? 'high-performance' : 'low-power'
+  powerPreference:'low-power'
 });if(!gl)throw Error('WebGL2 unavailable');function shader(type,source){const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s}program=gl.createProgram();gl.attachShader(program,shader(gl.VERTEX_SHADER,vs));gl.attachShader(program,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);u=Object.fromEntries(['ay','ax','scale','aspect','offset'].map(k=>[k,gl.getUniformLocation(program,k)]));gl.enable(gl.DEPTH_TEST);gl.enable(gl.SCISSOR_TEST);ok=true;mode='webgl2';canvas.hidden=false;toggle.disabled=false;rotationTime=null;configureMotion();return true}catch(e){ctx=canvas.getContext('2d');if(ctx){ok=true;mode='cpu';canvas.hidden=false;toggle.disabled=false;rotationTime=null;configureMotion();return true}ok=false;mode='none';canvas.hidden=true;toggle.textContent='3D unavailable';toggle.disabled=true;return false}}
 function decode(raw){const a=new Uint8Array(raw),d=new DataView(raw);if(d.getUint32(0,true)!==0x46546c67||d.getUint32(4,true)!==2||d.getUint32(8,true)!==a.length)throw Error('Bad GLB');const n=d.getUint32(12,true),j=JSON.parse(new TextDecoder().decode(a.slice(20,20+n))),start=28+n,p=j.meshes[0].primitives[0];if(mode==='cpu'){function acc(i){const ac=j.accessors[i],bv=j.bufferViews[ac.bufferView],o=start+(bv.byteOffset||0)+(ac.byteOffset||0),k={SCALAR:1,VEC3:3,VEC4:4}[ac.type],T={5125:Uint32Array,5126:Float32Array,5121:Uint8Array,5123:Uint16Array}[ac.componentType];return new T(raw,o,ac.count*k)}return{p:acc(p.attributes.POSITION),n:acc(p.attributes.NORMAL),c:acc(p.attributes.COLOR_0),ix:acc(p.indices)}}const pa=j.accessors[p.attributes.POSITION],pb=j.bufferViews[pa.bufferView],positions=new Float32Array(raw,start+(pb.byteOffset||0)+(pa.byteOffset||0),pa.count*3);const vao=gl.createVertexArray(),buffers=[];gl.bindVertexArray(vao);for(const [attr,name,size] of [['POSITION','p',3],['NORMAL','n',3],['COLOR_0','c',4]]){const ac=j.accessors[p.attributes[attr]],bv=j.bufferViews[ac.bufferView],b=gl.createBuffer();buffers.push(b);gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,a.subarray(start+(bv.byteOffset||0),start+(bv.byteOffset||0)+bv.byteLength),gl.STATIC_DRAW);const loc=gl.getAttribLocation(program,name);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,ac.componentType,!!ac.normalized,bv.byteStride||0,ac.byteOffset||0)}const ac=j.accessors[p.indices],bv=j.bufferViews[ac.bufferView],b=gl.createBuffer();buffers.push(b);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,b);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,a.subarray(start+(bv.byteOffset||0),start+(bv.byteOffset||0)+bv.byteLength),gl.STATIC_DRAW);gl.bindVertexArray(null);return{p:positions,vao,buffers,count:ac.count,type:ac.componentType,offset:ac.byteOffset||0}}
 const io=new IntersectionObserver(es=>{for(const it of es){const id=it.target.dataset.record,a=active.get(id);if(!a||a.node!==it.target)continue;a.near=it.isIntersecting;if(a.near&&['idle','cached'].includes(get(id).state))queue.add(id);else if(!a.near)queue.delete(id)}pump();invalidate();},{rootMargin:drawAhead+'px 0px'});
 function sync(){io.disconnect();active.clear();queue.clear();for(const node of lattice.querySelectorAll('.cube--artifact[data-record]')){const id=node.dataset.record,area=node.querySelector('.cube-center');if(!area||!/^ART-(0[1-9]|[1-6][0-9]|7[01])$/.test(id))continue;active.set(id,{node,area,near:false});get(id);io.observe(node)}invalidateLayout()}
-function pump(){if(!ok)return;while(loading<3&&queue.size){const id=queue.values().next().value;queue.delete(id);const e=get(id);if(!active.get(id)?.near||!['idle','cached'].includes(e.state))continue;e.state='loading';loading++;(async()=>{try{if(!e.raw){requested++;const res=await fetch('/living/v1/'+id+'.glb');if(!res.ok)throw Error('HTTP '+res.status);e.raw=await res.arrayBuffer()}if(!ok){e.state='cached';return}e.gpu=decode(e.raw);e.state='ready'}catch(err){e.state='failed';failed++}finally{loading--;invalidate();pump()}})()}}
+function pump(){if(!ok)return;while(loading<3&&queue.size){const id=queue.values().next().value;queue.delete(id);const e=get(id);if(!active.get(id)?.near||!['idle','cached'].includes(e.state))continue;e.state='loading';loading++;(async()=>{try{if(!e.raw){requested++;const res=await fetch('/living/v1/'+id+'.glb');if(!res.ok)throw Error('HTTP '+res.status);e.raw=await res.arrayBuffer()}if(!ok){e.state='cached';return}e.gpu=decode(e.raw);e.gpu.fitPoints=uniquePositions(e.gpu.p);e.state='ready'}catch(err){e.state='failed';failed++}finally{loading--;invalidate();pump()}})()}}
 canvas.addEventListener('webglcontextlost',ev=>{ev.preventDefault();ok=false;canvas.hidden=true;for(const e of entries.values()){e.gpu=null;e.state=e.raw?'cached':'idle'}for(const a of active.values())a.node.classList.remove('atlas-living-ready');dirty=true});canvas.addEventListener('webglcontextrestored',()=>{if(init()){for(const [id,a] of active)if(a.near)queue.add(id);pump();invalidate()}});
 function configureMotion() {
   const driverInfo = mode === 'webgl2' ? gl.getExtension('WEBGL_debug_renderer_info') : null;
   const driver = driverInfo ? gl.getParameter(driverInfo.UNMASKED_RENDERER_WEBGL) : '';
   usesSoftwareRendering = mode === 'cpu' || /swiftshader|llvmpipe|softpipe|software rasterizer|basic render|\bwarp\b/i.test(driver);
-  pixelRatioCap = isFirefox || usesSoftwareRendering ? 1 : 1.5;
+  pixelRatioCap = usesSoftwareRendering ? 1 : 1.5;
   if (!motionChosen) paused = reduceMotion || usesSoftwareRendering;
   setPause();
 }
@@ -91,29 +91,35 @@ new MutationObserver(sync).observe(lattice,{childList:true});
 
 // Keep the canvas in the same scrolling coordinate space as the chambers.
 // Its backing surface only covers the viewport and a small vertical buffer.
-function updateBand(scrollTop, viewportHeight, width, dpr) {
+function updateBand(scrollTop, scrollLeft, viewportHeight, viewportWidth, dpr) {
   if (layout.dirty) {
     const rect = lattice.getBoundingClientRect();
     layout.top = Math.max(0, Math.floor(rect.top + scrollTop));
     layout.bottom = Math.max(layout.top, Math.floor(rect.bottom + scrollTop));
+    layout.left = Math.max(0, Math.floor(rect.left + scrollLeft));
+    layout.right = Math.max(layout.left, Math.ceil(rect.right + scrollLeft));
     layout.dirty = false;
   }
   const height = active.size ? Math.min(viewportHeight + 2 * drawAhead, layout.bottom - layout.top) : 0;
+  const left = height ? Math.max(layout.left,Math.floor(scrollLeft)) : 0;
+  const width = height ? Math.max(0,Math.min(layout.right,Math.ceil(scrollLeft + viewportWidth)) - left) : 0;
   const visibleTop = Math.max(layout.top, scrollTop);
   const visibleBottom = Math.min(layout.bottom, scrollTop + viewportHeight);
   const coversView = band.top <= visibleTop && band.top + band.height >= visibleBottom;
   const insideLattice = band.top >= layout.top && band.top + height <= layout.bottom;
-  if (band.width === width && band.height === height && band.dpr === dpr && coversView && insideLattice) return false;
+  const sameSurface = band.left === left && band.width === width && band.height === height && band.dpr === dpr;
+  if (sameSurface && coversView && insideLattice) return false;
   const top = height ? Math.max(layout.top, Math.min(Math.floor(scrollTop) - drawAhead, layout.bottom - height)) : 0;
-  if (band.top === top && band.height === height && band.width === width && band.dpr === dpr) return false;
+  if (sameSurface && band.top === top) return false;
   if (band.top !== top) canvas.style.top = top + 'px';
+  if (band.left !== left) canvas.style.left = left + 'px';
   if (band.height !== height) canvas.style.height = height + 'px';
   if (band.width !== width) canvas.style.width = width + 'px';
   const pixelWidth = Math.round(width * dpr);
   const pixelHeight = Math.round(height * dpr);
   if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
   if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
-  Object.assign(band,{top,height,width,dpr});
+  Object.assign(band,{top,left,height,width,dpr});
   return true;
 }
 
@@ -129,7 +135,128 @@ function clearCanvas() {
 }
 // T44: fit actual projected silhouette, not merely the model origin.
 function projectedFit(p,angle,tilt,aspect){const cy=Math.cos(angle),sy=Math.sin(angle),cx=Math.cos(tilt),sx=Math.sin(tilt);let l=Infinity,r=-Infinity,b=Infinity,t=-Infinity;for(let i=0;i<p.length;i+=3){const x=cy*p[i]+sy*p[i+2],z=-sy*p[i]+cy*p[i+2],y=cx*p[i+1]-sx*z,w=sx*p[i+1]+cx*z,d=1/(1-w*.12),px=x*d,py=y*d;l=Math.min(l,px);r=Math.max(r,px);b=Math.min(b,py);t=Math.max(t,py)}const scale=Math.min(.86,1.84*aspect/Math.max(r-l,1e-6),1.84/Math.max(t-b,1e-6));return{scale,ox:-(l+r)*.5*scale/aspect,oy:-(b+t)*.5*scale,spanX:(r-l)*scale/aspect,spanY:(t-b)*scale}};
-function drawCPU(m,r,g,fit){let cy=Math.cos(m.angle),sy=Math.sin(m.angle),cx=Math.cos(m.tilt),sx=Math.sin(m.tilt);function rot(x,y,z){let q=cy*x+sy*z,w=-sy*x+cy*z;return[q,cx*y-sx*w,sx*y+cx*w]}const v=[],norm=[],scale=r.height*fit.scale*.5;for(let j=0;j<g.p.length;j+=3){let q=rot(g.p[j],g.p[j+1],g.p[j+2]);let d=1/(1-q[2]*.12);v.push([r.left+r.width/2+q[0]*d*scale+fit.ox*r.width/2,r.top+r.height/2-q[1]*d*scale-fit.oy*r.height/2,q[2]]);norm.push(rot(g.n[j],g.n[j+1],g.n[j+2]));}let faces=[];for(let j=0;j<g.ix.length;j+=3){const a=g.ix[j],b=g.ix[j+1],c=g.ix[j+2],p=v[a],q=v[b],s=v[c];if((q[0]-p[0])*(s[1]-p[1])-(q[1]-p[1])*(s[0]-p[0])>=0)continue;faces.push([a,b,c,(p[2]+q[2]+s[2])/3]);}faces.sort((a,b)=>a[3]-b[3]);ctx.save();ctx.beginPath();ctx.rect(r.left,r.top,r.width,r.height);ctx.clip();for(const [a,b,c] of faces){let n=norm[a].map((x,k)=>(x+norm[b][k]+norm[c][k])/3),l=Math.hypot(...n)||1;n=n.map(x=>x/l);const diff=Math.max(0,-.40*n[0]+.54*n[1]+.74*n[2]),sp=Math.pow(Math.max(0,-.21*n[0]+.28*n[1]+.936*n[2]),36),rim=Math.pow(1-Math.max(0,n[2]),2.2),strip=Math.pow(Math.max(0,.686*n[0]+.242*n[1]+.686*n[2]),13),col=[0,1,2].map(k=>Math.min(255,Math.round((g.c[a*4+k]+g.c[b*4+k]+g.c[c*4+k])/3*(.35+.75*diff)+255*(sp*.56+rim*.10+strip*.15))));ctx.fillStyle=`rgb(${col.join(',')})`;ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=.55;ctx.beginPath();ctx.moveTo(v[a][0],v[a][1]);ctx.lineTo(v[b][0],v[b][1]);ctx.lineTo(v[c][0],v[c][1]);ctx.closePath();ctx.fill();ctx.stroke()}ctx.restore()}
+function uniquePositions(positions) {
+  // Hard edges create repeated positions with different normals or colors.
+  // A repeated position cannot change the bounds of a projected silhouette.
+  const seen = new Set();
+  const points = [];
+  for (let i = 0; i < positions.length; i += 3) {
+    const x = positions[i], y = positions[i + 1], z = positions[i + 2];
+    const key = x + ',' + y + ',' + z;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    points.push(x,y,z);
+  }
+  return points.length < positions.length ? Float32Array.from(points) : positions;
+}
+
+function drawCPU(target, model, rect, mesh, fit) {
+  const cosY = Math.cos(model.angle), sinY = Math.sin(model.angle);
+  const cosX = Math.cos(model.tilt), sinX = Math.sin(model.tilt);
+  const points = mesh.projectedPoints ??= new Float64Array(mesh.p.length);
+  const normals = mesh.rotatedNormals ??= new Float64Array(mesh.n.length);
+  const depths = mesh.faceDepths ??= new Float64Array(mesh.ix.length / 3);
+  const faces = mesh.visibleFaces ??= [];
+  const scale = rect.height * fit.scale * .5;
+  const centerX = rect.left + rect.width * (1 + fit.ox) * .5;
+  const centerY = rect.top + rect.height * (1 - fit.oy) * .5;
+
+  for (let i = 0; i < mesh.p.length; i += 3) {
+    const x = mesh.p[i], y = mesh.p[i + 1], z = mesh.p[i + 2];
+    const depth = -sinY * x + cosY * z;
+    const rotatedZ = sinX * y + cosX * depth;
+    const perspective = scale / (1 - rotatedZ * .12);
+    points[i] = centerX + (cosY * x + sinY * z) * perspective;
+    points[i + 1] = centerY - (cosX * y - sinX * depth) * perspective;
+    points[i + 2] = rotatedZ;
+
+    const nx = mesh.n[i], ny = mesh.n[i + 1], nz = mesh.n[i + 2];
+    const normalDepth = -sinY * nx + cosY * nz;
+    normals[i] = cosY * nx + sinY * nz;
+    normals[i + 1] = cosX * ny - sinX * normalDepth;
+    normals[i + 2] = sinX * ny + cosX * normalDepth;
+  }
+
+  faces.length = 0;
+  for (let face = 0; face < depths.length; face++) {
+    const offset = face * 3;
+    const a = mesh.ix[offset] * 3, b = mesh.ix[offset + 1] * 3, c = mesh.ix[offset + 2] * 3;
+    const facing = (points[b] - points[a]) * (points[c + 1] - points[a + 1])
+      - (points[b + 1] - points[a + 1]) * (points[c] - points[a]);
+    if (facing >= 0) continue;
+    depths[face] = (points[a + 2] + points[b + 2] + points[c + 2]) / 3;
+    faces.push(face);
+  }
+  faces.sort((a,b) => depths[a] - depths[b]);
+
+  target.save();
+  target.beginPath();
+  target.rect(rect.left,rect.top,rect.width,rect.height);
+  target.clip();
+  target.lineWidth = .55;
+  for (const face of faces) {
+    const offset = face * 3;
+    const ia = mesh.ix[offset], ib = mesh.ix[offset + 1], ic = mesh.ix[offset + 2];
+    const a = ia * 3, b = ib * 3, c = ic * 3;
+    let nx = (normals[a] + normals[b] + normals[c]) / 3;
+    let ny = (normals[a + 1] + normals[b + 1] + normals[c + 1]) / 3;
+    let nz = (normals[a + 2] + normals[b + 2] + normals[c + 2]) / 3;
+    const length = Math.hypot(nx,ny,nz) || 1;
+    nx /= length;
+    ny /= length;
+    nz /= length;
+    const diffuse = .35 + .75 * Math.max(0,-.40*nx + .54*ny + .74*nz);
+    const shine = Math.pow(Math.max(0,-.21*nx + .28*ny + .936*nz),36) * .56
+      + Math.pow(1 - Math.max(0,nz),2.2) * .10
+      + Math.pow(Math.max(0,.686*nx + .242*ny + .686*nz),13) * .15;
+    const channel = index => Math.min(255,Math.round(
+      (mesh.c[ia*4 + index] + mesh.c[ib*4 + index] + mesh.c[ic*4 + index]) / 3 * diffuse + 255 * shine
+    ));
+    const color = `rgb(${channel(0)},${channel(1)},${channel(2)})`;
+    target.fillStyle = color;
+    target.strokeStyle = color;
+    target.beginPath();
+    target.moveTo(points[a],points[a + 1]);
+    target.lineTo(points[b],points[b + 1]);
+    target.lineTo(points[c],points[c + 1]);
+    target.closePath();
+    target.fill();
+    target.stroke();
+  }
+  target.restore();
+}
+
+const cpuSurfaces = new Map();
+const cpuCacheLimit = 8;
+
+function drawCachedCPU(entry, rect, fit) {
+  let cache = cpuSurfaces.get(entry);
+  if (!cache) {
+    const surface = document.createElement('canvas');
+    const context = surface.getContext('2d');
+    if (!context) {
+      drawCPU(ctx,entry,rect,entry.gpu,fit);
+      return;
+    }
+    cache = {surface,context};
+    if (cpuSurfaces.size >= cpuCacheLimit) cpuSurfaces.delete(cpuSurfaces.keys().next().value);
+  }
+  // Keep the last few visible models. Scrolling and dragging one model can
+  // reuse all other unchanged CPU-rendered poses.
+  cpuSurfaces.delete(entry);
+  cpuSurfaces.set(entry,cache);
+  if (cache.mesh !== entry.gpu || cache.fit !== fit || cache.width !== rect.width || cache.height !== rect.height) {
+    const width = Math.ceil(rect.width), height = Math.ceil(rect.height);
+    if (cache.surface.width !== width) cache.surface.width = width;
+    if (cache.surface.height !== height) cache.surface.height = height;
+    cache.context.setTransform(1,0,0,1,0,0);
+    cache.context.clearRect(0,0,width,height);
+    drawCPU(cache.context,entry,{left:0,top:0,width:rect.width,height:rect.height},entry.gpu,fit);
+    Object.assign(cache,{mesh:entry.gpu,fit,width:rect.width,height:rect.height});
+  }
+  ctx.drawImage(cache.surface,0,0,rect.width,rect.height,rect.left,rect.top,rect.width,rect.height);
+}
+
 const modalSelector = 'dialog[open],#mcubeOverlay:not([hidden]),body.inspector-open,.atlas-full-pdf-overlay,#atlasT20DossierOverlay';
 let modal = Boolean(document.querySelector(modalSelector));
 
@@ -147,7 +274,7 @@ new MutationObserver(syncModal).observe(document.body,{subtree:true,attributes:t
 function fitForPose(entry, aspect) {
   const cached = entry.fit;
   if (cached?.angle === entry.angle && cached.tilt === entry.tilt && cached.aspect === aspect) return cached.value;
-  const value = projectedFit(entry.gpu.p,entry.angle,entry.tilt,aspect);
+  const value = projectedFit(entry.gpu.fitPoints,entry.angle,entry.tilt,aspect);
   entry.fit = {angle:entry.angle,tilt:entry.tilt,aspect,value};
   return value;
 }
@@ -166,12 +293,14 @@ function frame(t) {
   const scrollTop = window.scrollY;
   const scrollLeft = window.scrollX;
   const dpr = Math.min(devicePixelRatio || 1,pixelRatioCap);
-  const bandChanged = updateBand(scrollTop,innerHeight,document.documentElement.clientWidth,dpr);
+  const bandChanged = updateBand(scrollTop,scrollLeft,innerHeight,document.documentElement.clientWidth,dpr);
   const dragging = Boolean(drag?.moved);
   const elapsed = t - last;
-  const rate = mode === 'cpu' ? (dragging ? 20 : 12) : (dragging && !usesSoftwareRendering ? 60 : 30);
+  const rate = mode === 'cpu' ? (dragging ? 20 : 12)
+    : isFirefox ? (dragging ? 30 : 24)
+    : (dragging && !usesSoftwareRendering ? 60 : 30);
   const interval = 1000 / rate;
-  if (!band.height) {
+  if (!band.height || !band.width) {
     drawn = 0;
     animateVisible = false;
     dirty = false;
@@ -200,7 +329,7 @@ function frame(t) {
 
     const rect = item.area.getBoundingClientRect();
     const top = rect.top + scrollTop - band.top;
-    const left = rect.left + scrollLeft;
+    const left = rect.left + scrollLeft - band.left;
     if (rect.width < 4 || rect.height < 4 || top + rect.height <= 0 || top >= band.height || left + rect.width <= 0 || left >= band.width) continue;
 
     const x = Math.round(left * dpr);
@@ -220,7 +349,7 @@ function frame(t) {
     }
     const fit = fitForPose(entry,width/height);
     if (mode === 'cpu') {
-      drawCPU(entry,{left,top,width:rect.width,height:rect.height},entry.gpu,fit);
+      drawCachedCPU(entry,{left,top,width:rect.width,height:rect.height},fit);
     } else {
       gl.viewport(x,y,width,height);
       gl.scissor(clipX,clipY,clipWidth,clipHeight);
