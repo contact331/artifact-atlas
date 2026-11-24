@@ -1,0 +1,9 @@
+name = "artifact-atlas-media"
+main = "media.mjs"
+compatibility_date = "2026-11-24"
+workers_dev = true
+preview_urls = false
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "artifact-atlas-public-media"
