@@ -1,4 +1,16 @@
-#atlas-living-canvas{position:fixed;inset:0;display:block;width:100vw;height:100vh;pointer-events:none;z-index:9;background:transparent}#atlas-living-canvas[hidden]{display:none}.cube--artifact{touch-action:pan-y}.cube--artifact.atlas-living-ready .cube-symbol{visibility:hidden}.atlas-living-toggle{white-space:nowrap;min-height:32px}body.inspector-open .atlas-living-ready .cube-symbol,body:has(dialog[open]) .atlas-living-ready .cube-symbol,body:has(#mcubeOverlay:not([hidden])) .atlas-living-ready .cube-symbol{visibility:visible}
+html { scroll-behavior: auto; }
+#atlas-living-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 9;
+  background: transparent;
+}
+#atlas-living-canvas[hidden]{display:none}.cube--artifact{touch-action:pan-y}.cube--artifact.atlas-living-ready .cube-symbol{visibility:hidden}.atlas-living-toggle{white-space:nowrap;min-height:32px}body.inspector-open .atlas-living-ready .cube-symbol,body:has(dialog[open]) .atlas-living-ready .cube-symbol,body:has(#mcubeOverlay:not([hidden])) .atlas-living-ready .cube-symbol{visibility:visible}
 .head-actions .atlas-living-toggle{display:inline-flex!important;align-items:center;justify-content:center;min-width:84px;padding:5px 9px;font-size:10px}.atlas-living-toggle:disabled{opacity:.55}@media(max-width:560px){.head-actions .atlas-living-toggle{min-width:0;font-size:9px;padding:3px 6px}}
 body:has(.atlas-full-pdf-overlay) .atlas-living-ready .cube-symbol,body:has(#atlasT20DossierOverlay) .atlas-living-ready .cube-symbol{visibility:visible}
 
