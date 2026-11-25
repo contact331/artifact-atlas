@@ -7,5 +7,17 @@ const dockingReads = [
    "const a=boxes[i],micro=microSizes[i];"]
 ];
 function patchApp(src){for(const [before,after] of [...edits,...dockingReads]){if(src.split(before).length!==2)throw Error('T44 app anchor mismatch');src=src.replace(before,()=>after);}return src;}
-function patchHtml(src){for(const [before,after] of [['</head>','<link rel="stylesheet" href="/living/living.css">\n</head>'],['</body>','<script src="/living/living.js" defer></script>\n</body>']]){if(src.split(before).length!==2)throw Error('T44 HTML anchor mismatch');src=src.replace(before,()=>after);}return src;}
+function patchHtml(src) {
+  const patches = [
+    ['</head>', '<link rel="stylesheet" href="/living/living.css">\n<link rel="stylesheet" href="/sidebar/sidebar.css">\n</head>'],
+    ['<div class="inspector-scroll" id="inspectorContent">',
+      '<button class="atlas-sidebar-sound" id="atlasSidebarSound" type="button" aria-label="Sidebar sound" aria-pressed="false" hidden>Sound <span aria-hidden="true">Off</span></button>\n<div class="inspector-scroll" id="inspectorContent">'],
+    ['</body>', '<script src="/living/living.js" defer></script>\n<script src="/sidebar/sidebar.js" defer></script>\n</body>']
+  ];
+  for (const [anchor, replacement] of patches) {
+    if (src.split(anchor).length !== 2) throw Error('Atlas HTML anchor mismatch');
+    src = src.replace(anchor, () => replacement);
+  }
+  return src;
+}
 export default {async fetch(request){const url=new URL(request.url),asset=url.searchParams.get('asset')||'index.html';if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405});if(!['index.html','assets/app.js'].includes(asset))return new Response(null,{status:404});url.searchParams.set('asset',asset);const upstream=await previous.fetch(new Request(url,{method:'GET',headers:request.headers}));if(!upstream.ok)return upstream;const original=await upstream.text();let body;try{body=asset==='index.html'?patchHtml(original):patchApp(original)}catch(e){console.error(e.message);return new Response(request.method==='HEAD'?null:original,{headers:{'Content-Type':upstream.headers.get('content-type')||'text/plain','Cache-Control':'private, no-store','X-Atlas-Patch':'failed'}})}return new Response(request.method==='HEAD'?null:body,{headers:{'Content-Type':asset==='index.html'?'text/html; charset=utf-8':'application/javascript; charset=utf-8','Content-Length':String(Buffer.byteLength(body)),'Cache-Control':'private, no-store','X-Atlas-Release':'T44'}});}};
