@@ -9,10 +9,10 @@ const dockingReads = [
 function patchApp(src){for(const [before,after] of [...edits,...dockingReads]){if(src.split(before).length!==2)throw Error('T44 app anchor mismatch');src=src.replace(before,()=>after);}return src;}
 function patchHtml(src) {
   const patches = [
-    ['</head>', '<link rel="stylesheet" href="/living/living.css">\n<link rel="stylesheet" href="/sidebar/sidebar.css">\n</head>'],
+    ['</head>', '<link rel="stylesheet" href="/living/living.css">\n<link rel="stylesheet" href="/sidebar/sidebar.css?v=60">\n</head>'],
     ['<div class="inspector-scroll" id="inspectorContent">',
-      '<button class="atlas-sidebar-sound" id="atlasSidebarSound" type="button" aria-label="Sidebar sound" aria-pressed="false" hidden>Sound <span aria-hidden="true">Off</span></button>\n<div class="inspector-scroll" id="inspectorContent">'],
-    ['</body>', '<script src="/living/living.js" defer></script>\n<script src="/sidebar/sidebar.js" defer></script>\n</body>']
+      '<button class="atlas-sidebar-sound" id="atlasSidebarSound" type="button" aria-label="Sidebar sound" aria-pressed="true">Sidebar sound <span aria-hidden="true">On</span></button>\n<div class="inspector-scroll" id="inspectorContent">'],
+    ['</body>', '<script src="/living/living.js" defer></script>\n<script src="/sidebar/sidebar.js?v=60" defer></script>\n</body>']
   ];
   for (const [anchor, replacement] of patches) {
     if (src.split(anchor).length !== 2) throw Error('Atlas HTML anchor mismatch');

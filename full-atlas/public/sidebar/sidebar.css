@@ -28,21 +28,29 @@
   overflow: auto;
 }
 
-.atlas-sidebar-sound {
-  align-self: flex-end;
+#inspector > .atlas-sidebar-sound {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
   flex: none;
-  margin: 3px 16px 0;
-  min-height: 28px;
-  padding: 2px 7px;
+  margin: 6px 16px 0;
+  min-height: 30px;
+  padding: 3px 9px;
   cursor: pointer;
   color: #b5c8d9;
   background: #152331;
   border: 1px solid #557087;
   border-radius: 5px;
-  font: 650 10px/1 system-ui, sans-serif;
+  font: 650 11px/1 system-ui, sans-serif;
 }
 
-.atlas-sidebar-sound span { margin-inline-start: 3px; color: #acbfd2; }
+.atlas-sidebar-sound span {
+  margin-inline-start: 6px;
+  color: #acbfd2;
+  text-transform: uppercase;
+  letter-spacing: .055em;
+}
 .atlas-sidebar-sound[aria-pressed="true"] { border-color: #659eb4; color: #e1f4ff; }
 .atlas-sidebar-sound[aria-pressed="true"] span { color: #a1ebf7; }
 .atlas-sidebar-sound:focus-visible { outline: 2px solid #a1ebf7; outline-offset: 2px; }
@@ -158,7 +166,7 @@
 #inspector > .qp-socket:focus-visible,
 .artifact-directory-entry:focus-visible {
   border-color: var(--sidebar-vfx-color);
-  outline: 2px solid var(--sidebar-vfx-color);
+  outline: 2px solid color-mix(in srgb, var(--sidebar-vfx-color), white 46%);
   outline-offset: -3px;
 }
 
@@ -171,7 +179,10 @@
   opacity: 0;
   pointer-events: none;
   transform: translateX(-66%);
-  background: linear-gradient(112deg, transparent 26%, color-mix(in srgb, var(--sidebar-vfx-color), transparent 67%) 48%, transparent 66%);
+  background: linear-gradient(112deg, transparent 29%,
+    color-mix(in srgb, var(--sidebar-vfx-color), transparent 80%) 40%,
+    color-mix(in srgb, var(--sidebar-vfx-color), transparent 34%) 49%,
+    color-mix(in srgb, var(--sidebar-vfx-color), transparent 79%) 56%, transparent 66%);
 }
 
 @media (any-hover: hover) {
@@ -180,12 +191,17 @@
     z-index: 2;
     transform: scale(1.018);
     border-color: var(--sidebar-vfx-color);
-    box-shadow: inset 0 0 11px color-mix(in srgb, var(--sidebar-vfx-color), transparent 82%),
-      inset 0 -3px #0e1925, 0 0 11px #6abbf231;
+    outline: 1px solid color-mix(in srgb, var(--sidebar-vfx-color), white 42%);
+    outline-offset: -2px;
+    background: linear-gradient(113deg,
+      color-mix(in srgb, var(--sidebar-vfx-color), #1b3147 30%) -20%,
+      color-mix(in srgb, var(--sidebar-vfx-color), #13283a 72%) 31%, #132333 80%);
+    box-shadow: inset 0 0 15px color-mix(in srgb, var(--sidebar-vfx-color), transparent 69%),
+      inset 0 -3px #0e1925, 0 0 13px color-mix(in srgb, var(--sidebar-vfx-color), transparent 53%);
   }
 
   #inspector > .qp-socket:hover::before,
-  .artifact-directory-entry:hover::before { animation: atlas-sidebar-sweep 440ms linear both; }
+  .artifact-directory-entry:hover::before { animation: atlas-sidebar-sweep 510ms linear both; }
 }
 
 @keyframes atlas-sidebar-sweep {
@@ -201,27 +217,34 @@
   margin: 0;
   padding: 0;
   border: 0;
-  background: transparent;
+  background: color-mix(in srgb, var(--sidebar-vfx-color), transparent 89%);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--sidebar-vfx-color), white 40%);
   overflow: hidden;
   pointer-events: none;
+  animation: atlas-sidebar-press-highlight 500ms ease-out both;
 }
 
 .atlas-sidebar-click-effect::before {
   content: "";
   position: absolute;
-  width: 152px;
-  height: 152px;
-  margin: -76px 0 0 -76px;
+  width: 172px;
+  height: 172px;
+  margin: -86px 0 0 -86px;
   left: var(--pulse-x);
   top: var(--pulse-y);
   border-radius: 50%;
   background: radial-gradient(circle,
-    color-mix(in srgb, var(--sidebar-vfx-color), transparent 70%) 0%,
-    color-mix(in srgb, var(--sidebar-vfx-color), transparent 90%) 38%,
+    color-mix(in srgb, var(--sidebar-vfx-color), transparent 47%) 0%,
+    color-mix(in srgb, var(--sidebar-vfx-color), transparent 85%) 38%,
     transparent 56%,
-    color-mix(in srgb, var(--sidebar-vfx-color), transparent 45%) 62%,
+    color-mix(in srgb, var(--sidebar-vfx-color), white 58%) 62%,
     transparent 69%);
-  animation: atlas-sidebar-pulse 370ms cubic-bezier(.14, .62, .25, 1) both;
+  animation: atlas-sidebar-pulse 500ms cubic-bezier(.14, .62, .25, 1) both;
+}
+
+@keyframes atlas-sidebar-press-highlight {
+  0%, 18% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @keyframes atlas-sidebar-pulse {
@@ -242,5 +265,6 @@
   .artifact-directory-entry:hover { transform: none; }
   #inspector > .qp-socket:hover::before,
   .artifact-directory-entry:hover::before,
-  .atlas-sidebar-click-effect { display: none; animation: none; }
+  .atlas-sidebar-click-effect::before { display: none; animation: none; }
+  .atlas-sidebar-click-effect { animation: none; }
 }

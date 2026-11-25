@@ -4,18 +4,24 @@
   if (!inspector || !soundToggle) return;
 
   const soundLabel = soundToggle.querySelector('span');
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const buttonSelector = '.artifact-directory-entry, #quickpadSocket';
+  const preferenceKey = 'atlas-sidebar-sound';
   let clickEffect;
-
-  soundToggle.hidden = !(window.AudioContext || window.webkitAudioContext);
+  let clearEffect;
 
   let audioContext;
   let soundBus;
   let cues;
-  let soundEnabled = false;
-  let enablingSound = false;
+  let soundEnabled = Boolean(AudioContext);
+  let resumePromise;
   let lastHover = -Infinity;
+  try {
+    soundEnabled = soundEnabled && localStorage.getItem(preferenceKey) !== 'off';
+  } catch {
+    // The sound control still works when storage is unavailable.
+  }
 
   function makeCue(duration, layers) {
     const rate = audioContext.sampleRate;
@@ -33,19 +39,18 @@
   }
 
   function initializeSound() {
-    const Context = window.AudioContext || window.webkitAudioContext;
-    audioContext = new Context();
+    audioContext = new AudioContext();
     soundBus = audioContext.createGain();
-    soundBus.gain.value = 0;
+    soundBus.gain.value = soundEnabled ? 1 : 0;
     soundBus.connect(audioContext.destination);
     cues = {
       hover: makeCue(.05, [
-        {start:1050, end:730, level:.052, decay:.013},
-        {start:1650, end:1220, level:.018, decay:.008}
+        {start:1050, end:730, level:.069, decay:.013},
+        {start:1650, end:1220, level:.024, decay:.008}
       ]),
       click: makeCue(.115, [
-        {start:440, end:180, level:.13, decay:.025},
-        {start:780, end:980, level:.052, decay:.039}
+        {start:440, end:180, level:.17, decay:.025},
+        {start:780, end:980, level:.065, decay:.039}
       ])
     };
   }
@@ -66,37 +71,55 @@
 
   function showSound(enabled) {
     soundEnabled = enabled;
-    soundBus.gain.setValueAtTime(enabled ? 1 : 0, audioContext.currentTime);
+    if (soundBus) soundBus.gain.setValueAtTime(enabled ? 1 : 0, audioContext.currentTime);
     soundToggle.setAttribute('aria-pressed', String(enabled));
-    soundLabel.textContent = enabled ? 'On' : 'Off';
+    soundLabel.textContent = !AudioContext ? 'Unavailable' : enabled ? 'On' : 'Off';
   }
 
-  soundToggle.addEventListener('click', async () => {
-    if (enablingSound) return;
-    if (soundEnabled) {
-      showSound(false);
-      return;
+  function unlockSound() {
+    if (!soundEnabled || audioContext?.state === 'running') return;
+    if (!resumePromise) {
+      try {
+        if (!audioContext) initializeSound();
+        if (audioContext.state === 'running') return;
+        resumePromise = audioContext.resume()
+          .catch(() => {})
+          .finally(() => { resumePromise = undefined; });
+      } catch {
+        showSound(false);
+        soundLabel.textContent = 'Unavailable';
+        soundToggle.disabled = true;
+      }
     }
-    enablingSound = true;
+    return resumePromise;
+  }
+
+  showSound(soundEnabled);
+  soundToggle.disabled = !AudioContext;
+  soundToggle.addEventListener('click', () => {
+    showSound(!soundEnabled);
     try {
-      if (!audioContext) initializeSound();
-      await audioContext.resume();
-      showSound(audioContext.state === 'running');
+      localStorage.setItem(preferenceKey, soundEnabled ? 'on' : 'off');
     } catch {
-      soundLabel.textContent = 'unavailable';
-      soundToggle.disabled = true;
-    } finally {
-      enablingSound = false;
+      // The preference still applies to this page.
     }
+    unlockSound();
   });
 
-  function showPulse(button, event) {
-    if (reducedMotion.matches) return;
+  function onPageInteraction(event) {
+    if (!event.isTrusted || soundToggle.contains(event.target) ||
+        event.target.closest?.(buttonSelector) ||
+        navigator.userActivation?.isActive === false) return;
+    unlockSound();
+  }
+  document.addEventListener('click', onPageInteraction, { capture: true });
+  document.addEventListener('keydown', onPageInteraction, { capture: true });
 
+  function showPulse(button, event) {
     const bounds = button.getBoundingClientRect();
     if (!bounds.width || !bounds.height) return;
 
-    clickEffect?.remove();
+    clearEffect?.();
     const effect = document.createElement('span');
     const computed = getComputedStyle(button);
     effect.className = 'atlas-sidebar-click-effect';
@@ -113,11 +136,16 @@
     effect.style.setProperty('--pulse-y', (event.detail ? event.clientY - bounds.top : bounds.height / 2) + 'px');
     const clear = () => {
       effect.remove();
-      if (clickEffect === effect) clickEffect = null;
+      if (clickEffect === effect) {
+        clickEffect = null;
+        clearEffect = null;
+      }
     };
     effect.addEventListener('animationend', clear, { once: true });
     effect.addEventListener('animationcancel', clear, { once: true });
     clickEffect = effect;
+    const timeout = setTimeout(clear, reducedMotion.matches ? 180 : 600);
+    clearEffect = () => { clearTimeout(timeout); clear(); };
     // The directory row disappears synchronously when its record opens.
     // Render the pulse separately so selection and Quickpad opening stay immediate.
     if (button.id === 'quickpadSocket') {
@@ -141,7 +169,9 @@
   inspector.addEventListener('click', event => {
     const button = event.target.closest(buttonSelector);
     if (!button) return;
-    playCue('click');
+    const resumed = event.isTrusted && unlockSound();
+    if (resumed) resumed.then(() => playCue('click'));
+    else playCue('click');
     showPulse(button, event);
   }, { capture: true });
 })();
