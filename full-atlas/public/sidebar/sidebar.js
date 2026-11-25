@@ -10,6 +10,8 @@
   const preferenceKey = 'atlas-sidebar-sound';
   let clickEffect;
   let clearEffect;
+  let touchPress;
+  let penHover;
 
   let audioContext;
   let soundBus;
@@ -159,16 +161,59 @@
     }
   }
 
+  function clearPenHover() {
+    penHover?.classList.remove('atlas-sidebar-pen-hover');
+    penHover = undefined;
+  }
+
   inspector.addEventListener('pointerover', event => {
     if (event.pointerType === 'touch') return;
     const button = event.target.closest(buttonSelector);
     if (!button || button.contains(event.relatedTarget)) return;
+    if (event.pointerType === 'pen') {
+      clearPenHover();
+      penHover = button;
+      button.classList.add('atlas-sidebar-pen-hover');
+    }
     playCue('hover');
+  });
+
+  inspector.addEventListener('pointerout', event => {
+    if (event.pointerType === 'pen' && penHover?.contains(event.target) &&
+        !penHover.contains(event.relatedTarget)) clearPenHover();
+  });
+
+  function releaseTouchPress() {
+    touchPress?.button.classList.remove('atlas-sidebar-touch-press');
+    touchPress = undefined;
+  }
+
+  inspector.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+    releaseTouchPress();
+    const button = event.target.closest(buttonSelector);
+    if (!button || !event.isPrimary || event.button !== 0) return;
+    touchPress = { button, pointerId: event.pointerId };
+    button.classList.add('atlas-sidebar-touch-press');
+  });
+
+  function endTouchPress(event) {
+    if (touchPress?.pointerId === event.pointerId) releaseTouchPress();
+  }
+  document.addEventListener('pointerup', endTouchPress, { capture: true });
+  document.addEventListener('pointercancel', event => {
+    endTouchPress(event);
+    if (event.pointerType === 'pen') clearPenHover();
+  }, { capture: true });
+  window.addEventListener('blur', () => {
+    releaseTouchPress();
+    clearPenHover();
   });
 
   inspector.addEventListener('click', event => {
     const button = event.target.closest(buttonSelector);
     if (!button) return;
+    if (button === penHover && button.id !== 'quickpadSocket') clearPenHover();
     const resumed = event.isTrusted && unlockSound();
     if (resumed) resumed.then(() => playCue('click'));
     else playCue('click');

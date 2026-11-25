@@ -204,6 +204,20 @@
   .artifact-directory-entry:hover::before { animation: atlas-sidebar-sweep 510ms linear both; }
 }
 
+#inspector > .qp-socket.atlas-sidebar-touch-press,
+.artifact-directory-entry.atlas-sidebar-touch-press,
+#inspector > .qp-socket.atlas-sidebar-pen-hover,
+.artifact-directory-entry.atlas-sidebar-pen-hover {
+  z-index: 2;
+  transform: scale(1.018);
+  transition-duration: 70ms;
+  outline: 1px solid color-mix(in srgb, var(--sidebar-vfx-color), white 42%);
+  outline-offset: -2px;
+}
+
+#inspector > .qp-socket.atlas-sidebar-pen-hover::before,
+.artifact-directory-entry.atlas-sidebar-pen-hover::before { animation: atlas-sidebar-sweep 510ms linear both; }
+
 @keyframes atlas-sidebar-sweep {
   0% { opacity: 0; transform: translateX(-66%); }
   17% { opacity: 1; }
@@ -262,9 +276,15 @@
   #inspector > .qp-socket,
   .artifact-directory-entry { transition: none; }
   #inspector > .qp-socket:hover,
-  .artifact-directory-entry:hover { transform: none; }
+  .artifact-directory-entry:hover,
+  #inspector > .qp-socket.atlas-sidebar-touch-press,
+  .artifact-directory-entry.atlas-sidebar-touch-press,
+  #inspector > .qp-socket.atlas-sidebar-pen-hover,
+  .artifact-directory-entry.atlas-sidebar-pen-hover { transform: none; }
   #inspector > .qp-socket:hover::before,
   .artifact-directory-entry:hover::before,
+  #inspector > .qp-socket.atlas-sidebar-pen-hover::before,
+  .artifact-directory-entry.atlas-sidebar-pen-hover::before,
   .atlas-sidebar-click-effect::before { display: none; animation: none; }
   .atlas-sidebar-click-effect { animation: none; }
 }
