@@ -219,4 +219,53 @@
     else playCue('click');
     showPulse(button, event);
   }, { capture: true });
+
+  const directoryContent = document.getElementById('inspectorContent');
+  if (!directoryContent) return;
+
+  const compactSidebar = matchMedia('(max-width: 820px)');
+  const pulseClass = 'atlas-id-pulsing';
+  let ids = [];
+  let nextId = 0;
+  let activeId;
+  let pulseTimer;
+
+  function advanceIdPulse() {
+    activeId?.classList.remove(pulseClass);
+    activeId = ids[nextId];
+    activeId.classList.add(pulseClass);
+    nextId = (nextId + 1) % ids.length;
+  }
+
+  function stopIdPulse() {
+    if (pulseTimer === undefined) return;
+    clearInterval(pulseTimer);
+    pulseTimer = undefined;
+    activeId.classList.remove(pulseClass);
+    activeId = undefined;
+  }
+
+  function syncIdPulse() {
+    if (!ids.length || document.hidden || reducedMotion.matches ||
+        (compactSidebar.matches && !inspector.classList.contains('open'))) {
+      stopIdPulse();
+    } else if (pulseTimer === undefined) {
+      advanceIdPulse();
+      pulseTimer = setInterval(advanceIdPulse, 250);
+    }
+  }
+
+  function refreshDirectoryIds() {
+    stopIdPulse();
+    ids = directoryContent.querySelectorAll('.artifact-directory-entry .artifact-directory-id');
+    nextId = 0;
+    syncIdPulse();
+  }
+
+  new MutationObserver(refreshDirectoryIds).observe(directoryContent, { childList: true });
+  new MutationObserver(syncIdPulse).observe(inspector, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('visibilitychange', syncIdPulse);
+  compactSidebar.addEventListener('change', syncIdPulse);
+  reducedMotion.addEventListener('change', syncIdPulse);
+  refreshDirectoryIds();
 })();

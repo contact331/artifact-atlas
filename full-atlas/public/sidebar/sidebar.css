@@ -144,6 +144,15 @@
   white-space: nowrap;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .artifact-directory-id.atlas-id-pulsing {
+    color: color-mix(in srgb, var(--entry-face), #fff 72%);
+    text-shadow: 0 0 3px var(--entry-face),
+      0 0 7px color-mix(in srgb, var(--entry-face), #fff 30%),
+      0 0 12px var(--entry-face);
+  }
+}
+
 .artifact-directory-name {
   min-width: 0;
   color: #edf7ff;
